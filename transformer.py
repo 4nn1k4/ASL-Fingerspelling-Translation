@@ -258,7 +258,7 @@ class CustomTransformerSchedule(tf.keras.optimizers.schedules.LearningRateSchedu
 
 
 def masked_loss(label, pred):
-    mask = label != 0
+    mask = label != 59
     loss_obj = tf.keras.losses.SparseCategoricalCrossentropy(
         from_logits=True, reduction='none'
     )
@@ -273,7 +273,7 @@ def masked_accuracy(label, pred):
     label = tf.cast(label, dtype=pred.dtype)
     match = label == pred
 
-    mask = label != 0
+    mask = label != 59
     match = match & mask
 
     match = tf.cast(match, dtype=tf.float32)
