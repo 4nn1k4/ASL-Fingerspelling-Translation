@@ -2,3 +2,4 @@ dataset complete
 venv
 .idea
 venv310
+*.pyc
