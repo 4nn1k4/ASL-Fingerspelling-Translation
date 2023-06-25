@@ -3,3 +3,4 @@ venv
 .idea
 venv310
 *.pyc
+model_checkpoints
