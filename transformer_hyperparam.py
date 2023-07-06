@@ -5,7 +5,7 @@ from keras import backend as K
 import random
 
 # fix seeds
-seed = 19819171271766643
+seed = 5262668
 np.random.seed(seed)
 random.seed(seed)
 tf.random.set_seed(seed)
@@ -56,7 +56,9 @@ class PositionalEmbedding(tf.keras.layers.Layer):
             x *= tf.math.sqrt(tf.cast(self.d_model, tf.float32))
         else:
             x = self.linear_mapping(x)
-        x = x + self.pos_encoding[tf.newaxis, :length, :]
+        #print(x.shape)
+        #print(self.pos_encoding[tf.newaxis, :length, :].shape)
+        x = x + self.pos_encoding[tf.newaxis, :length, :x.shape[-1]]
         return x
 
 class BaseAttention(tf.keras.layers.Layer):
