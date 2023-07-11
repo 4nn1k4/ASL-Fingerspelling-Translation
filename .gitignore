@@ -2,5 +2,6 @@ dataset complete
 venv
 .idea
 venv310
+venv_conv
 *.pyc
 model_checkpoints

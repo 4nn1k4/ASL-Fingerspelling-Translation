@@ -269,6 +269,14 @@ class CustomTransformerSchedule(tf.keras.optimizers.schedules.LearningRateSchedu
 
         return tf.math.rsqrt(self.d_model) * tf.math.minimum(arg1, arg2)
 
+    def get_config(self):
+        config = {
+            'd_model': self.d_model,
+            'warmup_steps': self.warmup_steps,
+
+        }
+        return config
+
 
 def masked_loss(label, pred):
     mask = label != 59
