@@ -313,12 +313,12 @@ def masked_accuracy(label, pred):
     return tf.reduce_sum(match)/tf.reduce_sum(mask)
 
 
-def get_compiled_transformer(d_model: int, num_layers: int, num_heads: int, ff_dim: int, output_vocab_size: int, dropout_rate: float = 0.1) -> Transformer:
+def get_compiled_transformer(sign_shape: tuple, context_shape: tuple, d_model: int, num_layers: int, num_heads: int, ff_dim: int, output_vocab_size: int, dropout_rate: float = 0.1) -> Transformer:
     learning_rate = CustomTransformerSchedule(d_model)
     optimizer = tf.keras.optimizers.Adam(learning_rate, beta_1=0.9, beta_2=0.98, epsilon=1e-9)
     transformer = get_model(
-        input1_shape=(None, 900, 144),
-        input2_shape=(None, 100),
+        input1_shape=sign_shape,
+        input2_shape=context_shape,
         num_layers=num_layers,
         d_model=d_model,
         num_heads=num_heads,
