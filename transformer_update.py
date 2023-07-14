@@ -9,9 +9,9 @@ seed = 5262668
 np.random.seed(seed)
 random.seed(seed)
 tf.random.set_seed(seed)
-session_conf = tf.compat.v1.ConfigProto(intra_op_parallelism_threads=1, inter_op_parallelism_threads=1)
-sess = tf.compat.v1.Session(graph=tf.compat.v1.get_default_graph(), config=session_conf)
-K.set_session(sess)
+#session_conf = tf.compat.v1.ConfigProto(intra_op_parallelism_threads=1, inter_op_parallelism_threads=1)
+#sess = tf.compat.v1.Session(graph=tf.compat.v1.get_default_graph(), config=session_conf)
+#K.set_session(sess)
 
 MAX_TOKENS = 128
 BUFFER_SIZE = 2000
@@ -100,11 +100,17 @@ class GlobalSelfAttention(BaseAttention):
 class CausalSelfAttention(BaseAttention):
 
     def call(self, x, *args, **kwargs):
+        seq_len = tf.shape(x)[1]
+
+        causal_mask = tf.linalg.band_part(tf.ones((seq_len, seq_len)), -1, 0)
+        causal_mask = tf.reshape(causal_mask, (1, 1, seq_len, seq_len))
+
         attn_output = self.mha(
             query=x,
             value=x,
             key=x,
-            use_causal_mask=True
+            # attention_mask=causal_mask,
+            use_causal_mask=True,
         )
         x = self.add([x, attn_output])
         x = self.layernorm(x)
@@ -238,6 +244,13 @@ class Transformer(tf.keras.layers.Layer):
 
         self.final_layer = tf.keras.layers.Dense(target_vocab_size)  # Why no Softmax??
 
+        self.num_layers = num_layers
+        self.d_model = d_model
+        self.num_heads = num_heads
+        self.dff = dff
+        self.target_vocab_size = target_vocab_size
+        self.dropout_rate = dropout_rate
+
     def call(self, inputs, *args, **kwargs):
         mp_data, previous_prediction = inputs
 
@@ -253,6 +266,18 @@ class Transformer(tf.keras.layers.Layer):
             pass
 
         return logits
+
+    def get_config(self):
+        config = super().get_config()
+        config.update({
+            "num_layers": self.num_layers,
+            "d_model": self.d_model,
+            "num_heads": self.num_heads,
+            "dff": self.dff,
+            "target_vocab_size": self.target_vocab_size,
+            "dropout_rate": self.dropout_rate
+        })
+        return config
 
 
 def get_model(input1_shape, input2_shape, num_layers, d_model, num_heads, dff, target_vocab_size, dropout_rate=0.1):
