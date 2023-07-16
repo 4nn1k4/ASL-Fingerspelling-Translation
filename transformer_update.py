@@ -9,9 +9,9 @@ seed = 5262668
 np.random.seed(seed)
 random.seed(seed)
 tf.random.set_seed(seed)
-#session_conf = tf.compat.v1.ConfigProto(intra_op_parallelism_threads=1, inter_op_parallelism_threads=1)
-#sess = tf.compat.v1.Session(graph=tf.compat.v1.get_default_graph(), config=session_conf)
-#K.set_session(sess)
+session_conf = tf.compat.v1.ConfigProto(intra_op_parallelism_threads=1, inter_op_parallelism_threads=1)
+sess = tf.compat.v1.Session(graph=tf.compat.v1.get_default_graph(), config=session_conf)
+K.set_session(sess)
 
 MAX_TOKENS = 128
 BUFFER_SIZE = 2000
